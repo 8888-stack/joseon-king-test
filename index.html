@@ -1,0 +1,819 @@
+<!doctype html>
+
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>조선왕 성향테스트 | 16장면 선택형</title>
+  <meta name="description" content="16개 장면에서 A/B/C/D를 고르면 8축 성향 점수로 조선 왕(태조~고종)과 자동 매칭 + 해설까지 바로 출력합니다." />
+  <meta name="robots" content="index,follow" />
+  <meta property="og:title" content="조선왕 성향테스트 | 16장면 선택형" />
+  <meta property="og:description" content="A/B/C/D 선택만으로 조선 왕 자동 매칭 + 해설" />
+  <meta property="og:type" content="website" />  <style>
+    :root{
+      --bg:#0b1020; --card:#121a33; --muted:#93a4c7; --text:#e9efff;
+      --accent:#6ea8ff; --accent2:#7dffcc; --warn:#ffd18b;
+      --border:rgba(255,255,255,.10);
+    }
+
+    /* Light theme: add ?theme=light */
+    [data-theme="light"]{
+      --bg:#f6f7fb; --card:#ffffff; --muted:#53627d; --text:#0f1733;
+      --accent:#2b6cff; --accent2:#00a37a; --warn:#a05a00;
+      --border:rgba(15,23,51,.10);
+    }
+
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,var(--bg) 0%, color-mix(in oklab, var(--bg), #000 10%) 100%);color:var(--text)}
+    a{color:inherit}
+
+    header{padding:28px 16px 10px;max-width:1040px;margin:0 auto}
+    h1{margin:0 0 6px;font-size:24px;letter-spacing:-0.3px}
+    .sub{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
+
+    main{max-width:1040px;margin:0 auto;padding:16px 16px 36px}
+
+    .two{display:grid;grid-template-columns:1fr;gap:12px}
+    @media (min-width: 980px){
+      .two{grid-template-columns: 1.55fr .9fr;align-items:start}
+      .sticky{position:sticky;top:12px}
+    }
+
+    .grid{display:grid;grid-template-columns:1fr;gap:12px}
+    .card{background:rgba(18,26,51,.92);border:1px solid var(--border);border-radius:18px;padding:14px 14px 12px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    [data-theme="light"] .card{background:var(--card)}
+
+    .topbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:12px}
+    .badge{display:inline-flex;gap:8px;align-items:center;padding:8px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04);font-size:12.5px;color:var(--muted)}
+    .badge b{color:var(--accent)}
+
+    .qhead{display:flex;gap:10px;align-items:flex-start}
+    .qno{min-width:34px;height:34px;border-radius:10px;background:rgba(110,168,255,.16);border:1px solid rgba(110,168,255,.35);display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--accent)}
+    .qtitle{font-weight:900;line-height:1.35;margin-top:2px}
+
+    .opts{margin-top:10px;display:grid;gap:8px}
+    label.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.03);cursor:pointer;transition:.12s}
+    [data-theme="light"] label.opt{border-color:rgba(15,23,51,.12);background:rgba(15,23,51,.02)}
+    label.opt:hover{border-color:rgba(110,168,255,.35);background:rgba(110,168,255,.06)}
+    input[type=radio]{margin-top:2px;accent-color:var(--accent)}
+    .opt b{display:inline-block;min-width:18px;color:var(--accent)}
+    .opt span{color:var(--text);line-height:1.45}
+
+    .actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+    button{border:0;border-radius:14px;padding:12px 14px;font-weight:950;cursor:pointer}
+    .btn-primary{background:linear-gradient(135deg,var(--accent) 0%,#9c6eff 100%);color:#081028}
+    .btn-secondary{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--text)}
+    [data-theme="light"] .btn-secondary{background:rgba(15,23,51,.04);border-color:rgba(15,23,51,.10);color:var(--text)}
+    .btn-secondary:hover{background:rgba(255,255,255,.10)}
+
+    .note{color:var(--muted);font-size:12.5px;line-height:1.6}
+    .warn{display:none;margin-top:8px;color:var(--warn);font-size:13px;line-height:1.55}
+
+    .result{display:none}
+    .result h2{margin:0 0 10px;font-size:18px}
+    .pillrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    .pill{padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);font-size:12.5px;color:var(--text)}
+    [data-theme="light"] .pill{border-color:rgba(15,23,51,.12);background:rgba(15,23,51,.03)}
+    .pill strong{color:var(--accent2)}
+
+    .kcard{margin-top:10px;padding:12px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03)}
+    [data-theme="light"] .kcard{border-color:rgba(15,23,51,.10);background:rgba(15,23,51,.02)}
+    .khead{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;justify-content:space-between}
+    .kname{font-size:18px;font-weight:1000;letter-spacing:-0.2px}
+    .kmeta{color:var(--muted);font-size:13px}
+    .kdesc{margin:10px 0 0;color:var(--text);line-height:1.65;font-size:13.5px}
+
+    .cols{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
+    @media (min-width: 980px){.cols{grid-template-columns:1fr 1fr}}
+
+    .list{margin:8px 0 0;padding-left:18px;color:var(--text);line-height:1.6;font-size:13.5px}
+
+    table{width:100%;border-collapse:collapse;margin-top:10px;overflow:hidden;border-radius:14px;border:1px solid rgba(255,255,255,.12)}
+    [data-theme="light"] table{border-color:rgba(15,23,51,.10)}
+    th,td{padding:10px 10px;text-align:left;font-size:13px}
+    th{background:rgba(255,255,255,.06);color:var(--muted);font-weight:900}
+    [data-theme="light"] th{background:rgba(15,23,51,.04)}
+    tr:nth-child(even) td{background:rgba(255,255,255,.03)}
+    [data-theme="light"] tr:nth-child(even) td{background:rgba(15,23,51,.02)}
+
+    .tinyrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .tinybtn{font-size:12.5px;padding:10px 12px;border-radius:12px}
+
+    /* Embed mode (optional): add ?embed=1 */
+    [data-embed="1"] header, [data-embed="1"] .blogTips {display:none}
+    [data-embed="1"] main{padding-top:8px}
+  </style></head><body>
+  <header>
+    <h1>조선왕 성향테스트</h1>
+    <p class="sub">16개 장면에서 A/B/C/D를 고르면, 8축 성향 점수(1~5)로 변환해 조선 왕(태조~고종)과 자동 매칭하고 해설을 제공합니다.</p><div class="topbar">
+  <div class="badge"><b>공유</b> 결과 링크가 주소 끝(#ABCD...)에 자동 저장됩니다.</div>
+  <div class="badge"><b>옵션</b> ?embed=1 (임베드) / ?theme=light (라이트)</div>
+</div>
+
+  </header>  <main class="two">
+    <section class="grid" id="quiz"></section><aside class="grid sticky">
+  <div class="card">
+    <div class="actions">
+      <button class="btn-primary" id="calcBtn">결과 보기</button>
+      <button class="btn-secondary" id="resetBtn" type="button">초기화</button>
+    </div>
+    <p class="note" style="margin:10px 0 0;">
+      채점 축: E(확장) · C(집권) · P(실리) · S(엄정) · M(군사) · F(대외강경) · R(개혁) · T(공개)
+    </p>
+    <p class="warn" id="warn">아직 선택하지 않은 문항이 있어요. 미선택 문항으로 이동해 선택한 뒤 다시 눌러주세요.</p>
+  </div>
+
+  <div class="card result" id="resultCard">
+    <h2>결과</h2>
+    <div class="pillrow" id="axisPills"></div>
+
+    <div class="kcard" id="topKingCard"></div>
+
+    <div class="cols">
+      <div class="kcard" id="axisExplain"></div>
+      <div class="kcard" id="strategyBox"></div>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>순위</th><th>왕</th><th>유사도(거리)</th><th>메모</th></tr>
+      </thead>
+      <tbody id="rankBody"></tbody>
+    </table>
+
+    <div class="tinyrow">
+      <button class="btn-secondary tinybtn" id="copyLinkBtn" type="button">결과 링크 복사</button>
+      <button class="btn-secondary tinybtn" id="copyEmbedBtn" type="button">임베드 코드 복사</button>
+    </div>
+
+    <p class="note" style="margin-top:10px;">
+      * 유사도(거리)는 낮을수록 더 비슷합니다. 이 테스트는 통치 스타일을 단순화한 모델이며 역사 평가는 다양할 수 있습니다.
+    </p>
+  </div>
+
+  <div class="card blogTips">
+    <p class="note" style="margin:0">
+      블로그에 넣을 때는 이 파일을 정적 호스팅(GitHub Pages/Netlify 등)에 올린 뒤, 링크(또는 iframe 허용 플랫폼이면 임베드)로 연결하는 방식이 가장 안정적입니다.
+    </p>
+  </div>
+</aside>
+
+  </main><script>
+  // =====================================================
+  // 0) URL 옵션 처리
+  // =====================================================
+  const params = new URLSearchParams(location.search);
+  const embed = params.get('embed') === '1' ? '1' : '0';
+  const theme = (params.get('theme') || '').toLowerCase();
+  document.body.dataset.embed = embed;
+  if (theme === 'light') document.body.dataset.theme = 'light';
+
+  // =====================================================
+  // 1) 문제(16장면)
+  // =====================================================
+  const questions = [
+    { title: "즉위 직후, 국정 기조", options: {
+      A: "밖으로 판을 키워 국력을 키운다.",
+      B: "내치부터 정비해 새는 곳을 막는다.",
+      C: "제도 개편을 선포하고 새 질서를 연다.",
+      D: "큰 변화는 위험. 속도 조절하며 안정 우선."
+    }},
+    { title: "대신들이 파벌로 갈라져 충돌", options: {
+      A: "공개 토론으로 논리 승부를 붙인다.",
+      B: "양쪽 핵심을 비공개로 불러 인사로 정리한다.",
+      C: "주동자를 단호히 쳐서 기강을 세운다.",
+      D: "한쪽에 힘을 실어 빠르게 결론내되, 반대편도 남긴다."
+    }},
+    { title: "강대국이 압박: 조공·무역·군사 요구", options: {
+      A: "원칙과 정통성을 내세워 거절한다.",
+      B: "실리 협상으로 피해를 최소화한다.",
+      C: "강경 대응을 선언하고 군비를 올린다.",
+      D: "시간을 벌며 내부 역량을 축적한다."
+    }},
+    { title: "흉년과 민란 조짐", options: {
+      A: "구휼 시스템 자체를 뜯어고친다.",
+      B: "창고 방출·감세 등 즉각 처방부터 한다.",
+      C: "치안 강화·매점 단속·엄벌로 눌러 잡는다.",
+      D: "지역별로 다르게 적용하며 반발을 관리한다."
+    }},
+    { title: "인재 등용 기준", options: {
+      A: "학문·도덕성과 공론 중심.",
+      B: "실무 능력·성과 중심.",
+      C: "충성·기강 중심.",
+      D: "균형(세력/지역) + 능력 절충."
+    }},
+    { title: "기록과 정보 통제", options: {
+      A: "기록·문서화·공개 절차를 강화한다.",
+      B: "기록은 하되, 민감 사안은 엄격히 비공개.",
+      C: "필요 최소만 남기고 왕의 재량을 넓힌다.",
+      D: "원칙은 투명, 예외는 체계적으로 관리한다."
+    }},
+    { title: "부정부패가 만연", options: {
+      A: "제도를 바꿔 구조적으로 줄인다.",
+      B: "감사 강화 + 성과/책임 인사를 한다.",
+      C: "대대적 숙청으로 본보기를 만든다.",
+      D: "큰 부패부터 치고, 타협선도 남긴다."
+    }},
+    { title: "국방 vs 문치: 예산 배분", options: {
+      A: "군사 대비태세가 최우선.",
+      B: "학술·기술·교육이 장기 국력의 핵심.",
+      C: "군사도 중요하지만, 지금은 민생과 재정 안정.",
+      D: "단계적 증강: 상황 따라 탄력 배분."
+    }},
+    { title: "법 집행의 톤", options: {
+      A: "엄격한 법치로 질서를 세운다.",
+      B: "원칙은 지키되, 회복/교정을 중시한다.",
+      C: "위반엔 타협 없이 강한 처벌.",
+      D: "사건 성격별로 차등 적용해 사회 비용을 줄인다."
+    }},
+    { title: "대외전략: 전쟁 직전의 긴장", options: {
+      A: "선제 억지(군사력 과시)로 밀어낸다.",
+      B: "외교로 봉합하며 시간을 번다.",
+      C: "제한전/국지전도 감수해 결판을 낸다.",
+      D: "내부 결속·재정 확보 후 대응한다."
+    }},
+    { title: "정책 속도", options: {
+      A: "한 번 정하면 밀어붙인다.",
+      B: "합의를 넓게 만들어 지속 가능성을 확보한다.",
+      C: "속도보다 명분·정통성이 우선이다.",
+      D: "핵심만 빠르게, 나머지는 단계적으로."
+    }},
+    { title: "새 제도 도입(과거제·군역·토지 등) 논쟁", options: {
+      A: "전통·관례는 쉽게 바꾸면 안 된다.",
+      B: "실험적으로 지역/분야부터 시범 도입한다.",
+      C: "전면 개편을 선포하고 전환한다.",
+      D: "기존 틀을 유지하되 구멍만 메운다."
+    }},
+    { title: "반대파 처리", options: {
+      A: "포섭과 타협으로 폭발을 막는다.",
+      B: "법과 절차로 관리하되, 핵심은 정리한다.",
+      C: "강하게 제거해 재발을 끊는다.",
+      D: "세력 균형을 유지하며 분열을 이용한다."
+    }},
+    { title: "기술/군사기술 투자(화포·측량·인쇄·천문 등)", options: {
+      A: "장기 투자로 국가 역량을 올린다.",
+      B: "당장 쓸모 있는 분야만 집중한다.",
+      C: "군사 기술 중심으로 몰아준다.",
+      D: "재정 부담을 보며 단계적으로."
+    }},
+    { title: "국가 운영 철학", options: {
+      A: "제도와 기록이 국가를 만든다.",
+      B: "민생과 성과가 정치를 증명한다.",
+      C: "질서·권위·안보가 먼저다.",
+      D: "균형과 생존, 리스크 관리가 핵심이다."
+    }},
+    { title: "마지막 선택: 당신의 ‘왕권’은?", options: {
+      A: "강한 집권으로 흔들림 없이 간다.",
+      B: "대신들과 합의하며 운영한다.",
+      C: "필요할 때만 강하게 쥐고, 평소엔 내려둔다.",
+      D: "비선/정보망을 활용해 조용히 통제한다."
+    }}
+  ];
+
+  // =====================================================
+  // 2) 채점표: 문항번호(1~16) x 선택지(A~D) -> 축 포인트
+  // 축: E,C,P,S,M,F,R,T
+  // =====================================================
+  const scoreMap = {
+    1: {A:{E:2,F:1}, B:{E:-2,T:1}, C:{R:2,E:1}, D:{E:-1,C:-1}},
+    2: {A:{T:1,C:-1}, B:{P:1,C:1}, C:{C:2,S:1}, D:{C:1,P:1}},
+    3: {A:{P:-2,F:1}, B:{P:2,F:-1}, C:{F:2,M:1}, D:{F:-1,T:1}},
+    4: {A:{R:2,T:1}, B:{P:1,E:-1}, C:{S:2,C:1}, D:{P:1,T:1}},
+    5: {A:{T:1,P:-1}, B:{P:2,R:1}, C:{C:1,S:1}, D:{C:1,P:1}},
+    6: {A:{T:2}, B:{T:1,P:1}, C:{T:-2,C:1}, D:{T:1,C:1}},
+    7: {A:{R:2,T:1}, B:{S:1,P:1}, C:{S:2,C:1}, D:{P:1,C:1}},
+    8: {A:{M:2}, B:{R:1,T:1}, C:{P:1,E:-1}, D:{M:1,P:1}},
+
+    9: {A:{S:2,C:1}, B:{S:-1,T:1}, C:{S:2,F:1}, D:{P:1,S:-1}},
+    10:{A:{F:1,M:1}, B:{F:-2,P:2}, C:{F:2,C:1}, D:{T:1,R:1}},
+    11:{A:{C:2}, B:{C:-2,T:1}, C:{P:-2,F:1}, D:{R:1,P:1}},
+    12:{A:{R:-2,T:1}, B:{R:1,P:1}, C:{R:2,C:1}, D:{R:-1,P:1}},
+    13:{A:{S:-1,P:1}, B:{S:1,T:1}, C:{S:2,C:1}, D:{C:1,P:1}},
+    14:{A:{R:1,T:1}, B:{P:2}, C:{M:2,F:1}, D:{P:1,M:1}},
+    15:{A:{T:2,R:1}, B:{P:2}, C:{S:1,M:1}, D:{C:1,P:1}},
+    16:{A:{C:2,S:1}, B:{C:-2,T:1}, C:{C:1,P:1}, D:{T:-1,C:1}},
+  };
+
+  // =====================================================
+  // 3) 조선 왕(태조~고종) 프로필 (8축: 1~5)
+  // + 해설(요약/강점/리스크/운영 팁)
+  // =====================================================
+  const kings = [
+    {name:"태조",E:5,C:3,P:4,S:3,M:4,F:4,R:5,T:3, note:"건국/개창",
+      summary:"판을 새로 열고 기반을 세우는 ‘개창형’ 통치자. 외연 확장과 제도 정비를 동시에 추진하는 쪽에 강합니다.",
+      strengths:["초기 국정 우선순위 설정이 빠름","자원·세력 재편에 능함","새 질서(룰)를 만들고 정착시킴"],
+      risks:["전환기 갈등이 커질 수 있음","권력 이행 설계가 약하면 불안정"],
+      tips:["초기 100일 로드맵을 짧고 강하게","핵심 동맹/인사 라인 먼저 안정화","세금·군역·행정부터 표준화"]
+    },
+    {name:"정종",E:2,C:2,P:3,S:2,M:3,F:3,R:2,T:3, note:"과도기 안정",
+      summary:"급격한 변화보다 ‘상처를 봉합’하는 안정형 운영에 어울립니다.",
+      strengths:["갈등 완충","리스크 회피로 급한 불을 끔","조정·정리 국면에 강함"],
+      risks:["결정 지연","변화 동력이 약해질 수 있음"],
+      tips:["갈등 사안을 분리해 단계적으로","정책은 ‘작게-빨리’ 실험","권한/책임 라인을 명확히"]
+    },
+    {name:"태종",E:4,C:5,P:4,S:5,M:4,F:4,R:4,T:4, note:"강한 왕권·정비",
+      summary:"강한 집권과 법치를 바탕으로 국가 시스템을 빠르게 정비하는 ‘정비·집권형’ 통치자.",
+      strengths:["결정/집행 속도","기강 확립","제도 운영의 실효성 확보"],
+      risks:["반발 누적","숙정/강압 비용"],
+      tips:["강한 제도와 민생 완충을 같이","감찰/사법의 절차 정당성 확보","반대파 완전 소거보다 관리"]
+    },
+    {name:"세종",E:3,C:4,P:3,S:2,M:3,F:3,R:5,T:5, note:"제도·학술·기술",
+      summary:"제도·기록·기술 투자로 장기 역량을 끌어올리는 ‘시스템 구축형’ 통치자.",
+      strengths:["장기 정책 설계","지식/기술 투자","행정 표준화와 기록"],
+      risks:["단기 위기 대응이 느리게 보일 수 있음","과도한 설계로 현장과 괴리"],
+      tips:["현장 피드백 루프(실험-측정-개선)","핵심 목표 3개로 단순화","인재 풀을 넓게 운영"]
+    },
+    {name:"문종",E:2,C:3,P:3,S:2,M:2,F:3,R:3,T:4, note:"안정 운영",
+      summary:"이미 갖춰진 시스템을 ‘매끄럽게 굴리는’ 안정형 운영에 가깝습니다.",
+      strengths:["정책 연속성","조용한 개선","관료 시스템 운용"],
+      risks:["새 위기에서 돌파력 부족"],
+      tips:["핵심 리스크 시나리오를 미리 준비","인사/재정 누수를 지속 정비","외부 변수에 대한 백업 플랜"]
+    },
+    {name:"단종",E:2,C:1,P:2,S:1,M:1,F:2,R:2,T:3, note:"약한 집권",
+      summary:"강한 집권보다는 보호·대리 운영 구조가 필요한 상징형에 가깝습니다.",
+      strengths:["온건함","갈등 완화 가능"],
+      risks:["정국 주도권 상실","권력 투쟁에 취약"],
+      tips:["권력 이행/견제 장치 제도화","핵심 집행 라인을 강하게 세팅","정보/안보 라인 점검"]
+    },
+    {name:"세조",E:3,C:5,P:4,S:5,M:4,F:4,R:3,T:4, note:"강권·숙정",
+      summary:"정국을 강하게 장악해 기강과 군사·행정을 재정렬하는 강권형.",
+      strengths:["위기에서 빠른 통제","군사/행정 장악력","단기 성과"],
+      risks:["정당성 논란 누적","과잉 통제로 반발"],
+      tips:["강권을 ‘절차’로 보강","숙정 대신 성과·책임 인사 활용","민생 완충 패키지 동시 추진"]
+    },
+    {name:"예종",E:2,C:3,P:3,S:3,M:3,F:3,R:2,T:3, note:"중간 성향",
+      summary:"극단을 피하고 평균적인 운영을 하는 균형형.",
+      strengths:["무난한 조정","리스크 분산"],
+      risks:["차별화된 추진력 부족"],
+      tips:["우선순위를 줄이고 집중","핵심 정책에만 강한 메시지"]
+    },
+    {name:"성종",E:2,C:3,P:2,S:2,M:2,F:3,R:4,T:5, note:"문치·제도 정교",
+      summary:"문치/제도 정교화와 기록을 중시하는 ‘규범·제도형’.",
+      strengths:["제도 완성도","기록/규범","행정 안정"],
+      risks:["현실 대응이 느릴 수 있음"],
+      tips:["실무(민생) 지표를 함께","현장형 인재를 보완적으로 등용"]
+    },
+    {name:"연산군",E:2,C:5,P:3,S:5,M:2,F:2,R:1,T:1, note:"폭압/사화",
+      summary:"(모델상) 강권·징벌이 과도하게 치우친 유형. 실제 운영 리스크가 매우 큽니다.",
+      strengths:["단기 통제"],
+      risks:["신뢰 붕괴","반발 폭발","장기 국정 실패"],
+      tips:["절차·견제·투명(T)을 의도적으로 올리기","징벌(S) 대신 구조 개선(R/P)으로 전환","의사결정 기록을 남기기"]
+    },
+    {name:"중종",E:2,C:2,P:2,S:2,M:2,F:3,R:3,T:4, note:"복구/완충",
+      summary:"급격한 변화를 줄이고 시스템을 복구/완충하는 유형.",
+      strengths:["복원력","조정"],
+      risks:["개혁 동력 약화"],
+      tips:["작은 실험으로 개혁의 불씨 유지","파벌 중재의 룰을 명확히"]
+    },
+    {name:"인종",E:2,C:2,P:2,S:2,M:2,F:3,R:3,T:4, note:"온건",
+      summary:"온건한 개혁/개선을 선호하는 유형.",
+      strengths:["갈등 완화","공론"],
+      risks:["정치력 부족 시 밀림"],
+      tips:["핵심 이해관계자 맵을 먼저 설계","비공식 소통 라인을 병행"]
+    },
+    {name:"명종",E:2,C:3,P:3,S:3,M:2,F:3,R:2,T:3, note:"섭정 영향",
+      summary:"대리 권력/외부 변수의 영향이 큰 국면에서 흔히 보이는 중간형.",
+      strengths:["상황 적응"],
+      risks:["주도권 약화"],
+      tips:["결정권과 집행권의 분리 최소화","지휘 체계를 단일화"]
+    },
+    {name:"선조",E:2,C:2,P:3,S:3,M:3,F:2,R:2,T:3, note:"분열/전쟁",
+      summary:"정국 분열 속 위기 대응이 중요한 유형.",
+      strengths:["조정"],
+      risks:["파벌 관리 실패 시 비용"],
+      tips:["위기 때는 의사결정 라인을 단순화","군·재정의 비상 프로토콜"]
+    },
+    {name:"광해군",E:3,C:4,P:5,S:3,M:3,F:2,R:4,T:2, note:"실리 외교·내치",
+      summary:"현실적 실리(P)와 내부 정비(R)를 결합한 ‘실리 운영형’.",
+      strengths:["대외 리스크 관리","실용적 선택","내치 개선"],
+      risks:["정치 정당성/여론 리스크"],
+      tips:["정책의 ‘명분 프레임’을 같이 설계","기록/공개(T)를 보강해 불신을 줄이기"]
+    },
+    {name:"인조",E:2,C:3,P:2,S:4,M:3,F:5,R:1,T:3, note:"명분 강경",
+      summary:"대외 강경(F)과 기강(S)을 중시하는 유형.",
+      strengths:["강한 메시지","내부 결속"],
+      risks:["외교 비용 증가","유연성 부족"],
+      tips:["강경 노선에도 실리(P) 협상 채널 유지","군비(M)와 재정 지속가능성 균형"]
+    },
+    {name:"효종",E:3,C:4,P:3,S:3,M:4,F:4,R:3,T:3, note:"군사 강화",
+      summary:"안보/군사(M) 강화 중심의 현실형.",
+      strengths:["억지력 구축","위기 대응"],
+      risks:["재정 부담","외교 긴장"],
+      tips:["군사 강화는 단계적으로","민생 패키지와 세트로 추진"]
+    },
+    {name:"현종",E:2,C:3,P:3,S:2,M:2,F:3,R:2,T:4, note:"안정/조정",
+      summary:"조정·중재를 통해 연속성을 유지하는 안정형.",
+      strengths:["갈등 완충","기록/절차"],
+      risks:["결단력 부족으로 보일 수 있음"],
+      tips:["결정 데드라인을 제도화","핵심 이슈만 강하게"]
+    },
+    {name:"숙종",E:2,C:4,P:4,S:4,M:3,F:3,R:2,T:3, note:"정국 주도",
+      summary:"정국을 주도하며 세력 균형을 재편하는 ‘정치 운용형’.",
+      strengths:["권력 운용","상황 판단"],
+      risks:["피로감/반발 누적"],
+      tips:["정국 기술(정치)과 제도(R/T)를 같이 끌고 가기"]
+    },
+    {name:"경종",E:2,C:2,P:2,S:2,M:2,F:3,R:1,T:3, note:"약한 집권",
+      summary:"강한 추진보다 안정·완충에 가까운 유형.",
+      strengths:["온건"],
+      risks:["정국 주도권 약화"],
+      tips:["집행 라인 강화","정책 수를 줄이고 집중"]
+    },
+    {name:"영조",E:2,C:4,P:3,S:3,M:2,F:3,R:4,T:4, note:"탕평/점진 개혁",
+      summary:"균형을 잡되(R) 점진적으로 바꾸는 탕평형.",
+      strengths:["갈등 관리","지속 가능한 개혁"],
+      risks:["급진 과제엔 느릴 수 있음"],
+      tips:["점진 개혁의 ‘체감 성과’를 설계","타협선의 기준을 문서화"]
+    },
+    {name:"정조",E:3,C:4,P:4,S:3,M:3,F:3,R:5,T:4, note:"개혁·인재",
+      summary:"개혁(R)과 실무(P)를 결합해 조직/인재로 성과를 내는 ‘개혁 실행형’.",
+      strengths:["개혁 추진","인재 운영","장기 과제 실행"],
+      risks:["저항 세력 관리"],
+      tips:["개혁은 ‘인사-제도-성과’ 3박자로","정치 리스크를 분산(연합)으로"]
+    },
+    {name:"순조",E:1,C:3,P:2,S:2,M:2,F:3,R:1,T:3, note:"세도정치",
+      summary:"구조적으로 외부 변수/기득권 영향이 커지는 국면에서 나타나는 유형.",
+      strengths:["단기 안정"],
+      risks:["구조 악화","개혁 정체"],
+      tips:["핵심 제도(R)부터 최소한으로 복원","감찰(S/T)을 강화해 누수 차단"]
+    },
+    {name:"헌종",E:1,C:2,P:2,S:2,M:2,F:3,R:1,T:3, note:"구조 제약",
+      summary:"결정권이 약하고 구조 제약이 큰 상태를 반영하는 유형.",
+      strengths:["온건"],
+      risks:["개혁 동력 부족"],
+      tips:["작은 승리부터 축적","인사/재정 누수 차단"]
+    },
+    {name:"철종",E:1,C:2,P:2,S:2,M:2,F:3,R:1,T:2, note:"말기 관성",
+      summary:"관성 운영이 강해지는 말기형.",
+      strengths:["낮은 변동성"],
+      risks:["환경 변화에 취약"],
+      tips:["최소 개혁 패키지(R)로 관성 끊기","정보/기록(T)로 현실 진단부터"]
+    },
+    {name:"고종",E:3,C:3,P:4,S:3,M:3,F:3,R:4,T:2, note:"근대 전환/외압",
+      summary:"외압 속 전환을 시도하는 ‘전환기 운영형’.",
+      strengths:["전환 과제 감지","실리 선택"],
+      risks:["외부 압력과 내부 갈등 동시"],
+      tips:["개혁(R)은 단계화하고, 공개/신뢰(T)를 보강","대외 협상은 포트폴리오로 분산"]
+    },
+  ];
+
+  const axisMeta = {
+    E: {label:"E 확장", desc:"외연 확대·공세"},
+    C: {label:"C 집권", desc:"왕권 집중·결단"},
+    P: {label:"P 실리", desc:"실용·융통"},
+    S: {label:"S 엄정", desc:"법치·징벌"},
+    M: {label:"M 군사", desc:"군사 우선"},
+    F: {label:"F 대외강경", desc:"대외 압박에 강경"},
+    R: {label:"R 개혁", desc:"제도 혁신"},
+    T: {label:"T 공개", desc:"기록·표준·투명"},
+  };
+
+  const AXES = ["E","C","P","S","M","F","R","T"];
+
+  function pointsToLevel(pt){
+    if (pt <= -6) return 1;
+    if (pt <= -3) return 2;
+    if (pt <= 2) return 3;
+    if (pt <= 5) return 4;
+    return 5;
+  }
+
+  function distanceSquared(profile, levels){
+    let s = 0;
+    for (const a of AXES){
+      const d = (profile[a] - levels[a]);
+      s += d*d;
+    }
+    return s;
+  }
+
+  function axisTone(a, v){
+    // v: 1~5
+    if (v >= 4){
+      switch(a){
+        case 'E': return "대외적으로 판을 키우는 쪽에 강함(확장 지향)";
+        case 'C': return "결정권을 모아 속도를 내는 집권 성향";
+        case 'P': return "실리와 융통을 중시(현실 최적화)";
+        case 'S': return "엄정한 법치/징벌로 질서 확보";
+        case 'M': return "군사·안보 우선순위가 높음";
+        case 'F': return "대외 압박엔 강경하게 맞서는 편";
+        case 'R': return "제도 혁신/개편에 적극적";
+        case 'T': return "기록·표준·투명 절차를 선호";
+      }
+    }
+    if (v <= 2){
+      switch(a){
+        case 'E': return "수성·내치 중심(확장보다 안정)";
+        case 'C': return "합의/분권 쪽에 가까움(강한 집권은 낮음)";
+        case 'P': return "명분·원칙을 더 중시(실리 타협 낮음)";
+        case 'S': return "관용/조정에 가까움(징벌 낮음)";
+        case 'M': return "문치/민생 우선(군사 우선 낮음)";
+        case 'F': return "대외 유화/타협을 선호";
+        case 'R': return "현상 유지/점진 개선 성향";
+        case 'T': return "비공개/재량 처리 비중이 큼";
+      }
+    }
+    return "균형형(상황에 따라 탄력 운영)";
+  }
+
+  function makeArchetype(levels){
+    // 한 줄 요약을 규칙 기반으로 생성
+    const {E,C,P,S,M,F,R,T} = levels;
+    if (R>=4 && T>=4 && P<=3) return "제도·기록 중심의 시스템 구축형";
+    if (R>=4 && P>=4) return "개혁을 성과로 연결하는 실행형";
+    if (C>=4 && S>=4) return "집권·법치 기반의 기강 확립형";
+    if (P>=4 && F<=2) return "실리 외교·리스크 관리형";
+    if (M>=4 && F>=4) return "안보/억지력 우선형";
+    if (C<=2 && T>=4) return "합의·절차 중심의 안정 운영형";
+    return "균형형(상황 적응형)";
+  }
+
+  function makeRecommendations(levels){
+    // 3개 추천 운영법 (강점은 살리고, 과잉/부족 축을 보정)
+    const rec = [];
+
+    // 투명/절차 보정
+    if (levels.C>=4 && levels.T<=2) rec.push("집권이 강한 편이라면: 결정 근거를 ‘기록/공개’로 남겨 불신과 반발을 줄이기");
+    if (levels.R>=4 && levels.P<=2) rec.push("개혁이 강한 편이라면: 전면 개편보다 시범-확대(파일럿)로 비용을 통제하기");
+    if (levels.P>=4 && levels.T<=2) rec.push("실리가 강한 편이라면: 최소한의 명분/원칙 프레임을 같이 설계해 정당성 리스크를 줄이기");
+    if (levels.S>=4 && levels.C>=4 && levels.P<=3) rec.push("기강이 강한 편이라면: ‘징벌’보다 ‘구조 개선’(R)과 ‘성과 인사’(P)로 재발 방지하기");
+    if (levels.M>=4 && levels.P<=3) rec.push("안보 우선형이라면: 재정 지속가능성(민생) 지표를 함께 둬 장기 비용을 관리하기");
+    if (levels.C<=2 && levels.R<=2) rec.push("합의형·점진형이라면: 데드라인과 책임자를 명확히 해서 결정 지연을 막기");
+
+    // 빈 경우를 대비한 기본 추천
+    if (rec.length < 3){
+      rec.push("핵심 목표를 3개로 제한하고, 나머지는 ‘단계적 로드맵’으로 관리하기");
+    }
+    if (rec.length < 3){
+      rec.push("인사(이조)·재정(호조)·감찰(사헌부) 라인을 먼저 안정화하기");
+    }
+    if (rec.length < 3){
+      rec.push("정책마다 ‘성과 지표 + 부작용 지표’를 동시에 두기");
+    }
+
+    return rec.slice(0,3);
+  }
+
+  // =====================================================
+  // 4) UI 렌더링
+  // =====================================================
+  const quizEl = document.getElementById("quiz");
+  questions.forEach((q, idx) => {
+    const n = idx + 1;
+    const card = document.createElement("div");
+    card.className = "card";
+    card.id = `q${n}`;
+
+    const head = document.createElement("div");
+    head.className = "qhead";
+    head.innerHTML = `<div class="qno">${n}</div><div class="qtitle">${q.title}</div>`;
+
+    const opts = document.createElement("div");
+    opts.className = "opts";
+
+    for (const key of ["A","B","C","D"]){
+      const id = `q${n}_${key}`;
+      const label = document.createElement("label");
+      label.className = "opt";
+      label.setAttribute("for", id);
+      label.innerHTML = `
+        <input type="radio" name="q${n}" id="${id}" value="${key}">
+        <div><b>${key}</b> <span>${q.options[key]}</span></div>
+      `;
+      opts.appendChild(label);
+    }
+
+    card.appendChild(head);
+    card.appendChild(opts);
+    quizEl.appendChild(card);
+  });
+
+  // =====================================================
+  // 5) 답안 저장/복원(해시)
+  // =====================================================
+  function getAnswers(){
+    const answers = [];
+    for (let i=1;i<=questions.length;i++){
+      const checked = document.querySelector(`input[name=q${i}]:checked`);
+      answers.push(checked ? checked.value : null);
+    }
+    return answers;
+  }
+
+  function setAnswersFromString(s){
+    const letters = (s || "").toUpperCase().replace(/[^ABCD_]/g, "").split("");
+    for (let i=1;i<=questions.length;i++){
+      const v = letters[i-1];
+      if (!v || v === '_') continue;
+      const el = document.getElementById(`q${i}_${v}`);
+      if (el) el.checked = true;
+    }
+  }
+
+  function saveToHash(answers){
+    const compact = answers.map(a => a || "_").join("");
+    location.hash = compact;
+  }
+
+  function restoreFromHash(){
+    const h = (location.hash || "").replace(/^#/, "");
+    if (h) setAnswersFromString(h);
+  }
+  restoreFromHash();
+
+  // =====================================================
+  // 6) 채점 + 결과 표시
+  // =====================================================
+  const warnEl = document.getElementById("warn");
+  const resultCard = document.getElementById("resultCard");
+  const axisPills = document.getElementById("axisPills");
+  const rankBody = document.getElementById("rankBody");
+  const topKingCard = document.getElementById("topKingCard");
+  const axisExplain = document.getElementById("axisExplain");
+  const strategyBox = document.getElementById("strategyBox");
+
+  function scrollToFirstMissing(answers){
+    const idx = answers.findIndex(a => !a);
+    if (idx >= 0){
+      const target = document.getElementById(`q${idx+1}`);
+      if (target) target.scrollIntoView({behavior:"smooth", block:"center"});
+    }
+  }
+
+  function calc(){
+    const answers = getAnswers();
+    const missing = answers.some(a => !a);
+    if (missing){
+      warnEl.style.display = "block";
+      resultCard.style.display = "none";
+      scrollToFirstMissing(answers);
+      return;
+    }
+    warnEl.style.display = "none";
+
+    // (1) 점수(포인트) 누적
+    const pts = {E:0,C:0,P:0,S:0,M:0,F:0,R:0,T:0};
+    answers.forEach((ans, i) => {
+      const qn = i+1;
+      const m = scoreMap[qn]?.[ans];
+      if (!m) return;
+      for (const [k,v] of Object.entries(m)) pts[k] += v;
+    });
+
+    // (2) 1~5로 변환
+    const levels = {};
+    for (const a of AXES) levels[a] = pointsToLevel(pts[a]);
+
+    // (3) 왕 매칭(거리)
+    const rankedAll = kings
+      .map(k => ({...k, dist2: distanceSquared(k, levels)}))
+      .sort((a,b) => a.dist2 - b.dist2);
+
+    const ranked = rankedAll.slice(0, 5);
+    const top = rankedAll[0];
+
+    // (4) 축 Pill
+    axisPills.innerHTML = "";
+    for (const a of AXES){
+      const pill = document.createElement("div");
+      pill.className = "pill";
+      pill.innerHTML = `${axisMeta[a].label}: <strong>${levels[a]}</strong> <span style="color:var(--muted)">(${axisMeta[a].desc})</span>`;
+      axisPills.appendChild(pill);
+    }
+
+    // (5) Top 왕 해설 카드
+    const dist = Math.sqrt(top.dist2).toFixed(2);
+    const diffs = AXES.map(a => ({a, d: Math.abs(top[a]-levels[a])}))
+      .sort((x,y) => x.d - y.d);
+    const closeAxes = diffs.slice(0,3).map(x => `${axisMeta[x.a].label}`);
+    const farAxes = diffs.slice(-2).reverse().map(x => `${axisMeta[x.a].label}`);
+
+    const sList = (arr) => `<ul class="list">${arr.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+
+    topKingCard.innerHTML = `
+      <div class="khead">
+        <div>
+          <div class="kname">1순위: ${top.name}</div>
+          <div class="kmeta">${top.note} · 유사도(거리) ${dist}</div>
+        </div>
+        <div class="kmeta">한 줄 요약: <b style="color:var(--accent2)">${makeArchetype(levels)}</b></div>
+      </div>
+      <div class="kdesc">${top.summary}</div>
+      <div class="cols" style="margin-top:10px">
+        <div>
+          <div class="kmeta"><b>강점</b></div>
+          ${sList(top.strengths)}
+        </div>
+        <div>
+          <div class="kmeta"><b>리스크</b></div>
+          ${sList(top.risks)}
+        </div>
+      </div>
+      <div style="margin-top:10px">
+        <div class="kmeta"><b>추천 운영법</b></div>
+        ${sList(top.tips)}
+      </div>
+      <div style="margin-top:10px">
+        <div class="kmeta"><b>매칭 근거</b></div>
+        <div class="kdesc">
+          가장 유사한 축: <b>${closeAxes.join(', ')}</b><br/>
+          차이가 큰 축: <b>${farAxes.join(', ')}</b>
+        </div>
+      </div>
+    `;
+
+    // (6) 축 해설
+    const high = AXES.filter(a => levels[a] >= 4);
+    const low = AXES.filter(a => levels[a] <= 2);
+    const mid = AXES.filter(a => levels[a] === 3);
+
+    axisExplain.innerHTML = `
+      <div class="khead"><div class="kname">성향 해설</div><div class="kmeta">8축 해석</div></div>
+      <div class="kdesc">
+        <b>강하게 드러난 축</b>: ${high.length ? high.map(a=>axisMeta[a].label).join(', ') : '없음'}<br/>
+        <b>낮게 나온 축</b>: ${low.length ? low.map(a=>axisMeta[a].label).join(', ') : '없음'}<br/>
+        <b>균형 축</b>: ${mid.length ? mid.map(a=>axisMeta[a].label).join(', ') : '없음'}
+      </div>
+      <ul class="list">
+        ${AXES.map(a => `<li><b>${axisMeta[a].label} ${levels[a]}</b> — ${axisTone(a, levels[a])}</li>`).join('')}
+      </ul>
+    `;
+
+    // (7) 운영 전략
+    const rec = makeRecommendations(levels);
+    strategyBox.innerHTML = `
+      <div class="khead"><div class="kname">운영 전략</div><div class="kmeta">성향 기반 추천</div></div>
+      <div class="kdesc">강점은 유지하고, 과잉/부족 축에서 생길 수 있는 부작용을 줄이기 위한 제안입니다.</div>
+      <ul class="list">${rec.map(x=>`<li>${x}</li>`).join('')}</ul>
+      <div class="kdesc" style="margin-top:10px;color:var(--muted)">Tip: 결과 링크를 공유하면 동일 답안이 자동 복원됩니다.</div>
+    `;
+
+    // (8) Top3 표
+    rankBody.innerHTML = "";
+    rankedAll.slice(0,3).forEach((r, idx) => {
+      const tr = document.createElement("tr");
+      const dist = Math.sqrt(r.dist2).toFixed(2);
+      tr.innerHTML = `<td>${idx+1}</td><td><b>${r.name}</b></td><td>${dist}</td><td>${r.note}</td>`;
+      rankBody.appendChild(tr);
+    });
+
+    resultCard.style.display = "block";
+
+    // (9) URL 해시에 저장
+    saveToHash(answers);
+  }
+
+  document.getElementById("calcBtn").addEventListener("click", calc);
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+    warnEl.style.display = "none";
+    resultCard.style.display = "none";
+    location.hash = "";
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+
+  // 해시가 바뀌면 복원
+  window.addEventListener("hashchange", () => {
+    document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+    restoreFromHash();
+  });
+
+  // (10) 복사 버튼
+  function currentShareUrl(){
+    // embed 모드가 아니어도 결과 공유는 기본 URL(쿼리 유지) + 해시
+    const u = new URL(location.href);
+    // embed=1은 공유 기본값에서 제거 (원하면 embed 공유는 별도)
+    if (u.searchParams.get('embed') === '1') u.searchParams.delete('embed');
+    return u.toString();
+  }
+
+  async function copyText(t){
+    try{
+      await navigator.clipboard.writeText(t);
+      return true;
+    } catch(e){
+      // 폴백
+      const ta = document.createElement('textarea');
+      ta.value = t;
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    }
+  }
+
+  document.getElementById('copyLinkBtn').addEventListener('click', async () => {
+    const ok = await copyText(currentShareUrl());
+    alert(ok ? '결과 링크를 복사했습니다.' : '복사에 실패했습니다. 주소창에서 직접 복사해주세요.');
+  });
+
+  document.getElementById('copyEmbedBtn').addEventListener('click', async () => {
+    const u = new URL(currentShareUrl());
+    u.searchParams.set('embed','1');
+    const code = `<iframe src="${u.toString()}" width="100%" height="1200" style="border:0;border-radius:16px;overflow:hidden" loading="lazy"></iframe>`;
+    const ok = await copyText(code);
+    alert(ok ? '임베드 코드를 복사했습니다.' : '복사에 실패했습니다.');
+  });
+</script></body>
+</html>
